@@ -1,0 +1,26 @@
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:postgresql://10.0.101.244:5432/security_demo
+    username: postgres
+    password: 123456
+    hikari:
+      connection-test-query: "select 1"
+      minimum-idle: 5
+      idle-timeout: 180000
+      maximum-pool-size: 10
+      auto-commit: true
+      pool-name: MyHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      validation-timeout: 1000
+  redis:
+    host: 10.0.101.244
+    port: 6379
+    timeout: 1000
+    database: 11
+logging:
+  level:
+    "org.springframework": debug
+    "com.example.serverapi.domain.security.mapper.UserMapper": debug

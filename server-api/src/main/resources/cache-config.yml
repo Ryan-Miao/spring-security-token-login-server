@@ -1,0 +1,19 @@
+
+# ttl到期删除cache, maxIdleTime 没有访问，删除cache
+# 基础cache，单位毫秒， ttl 3天， maxIdleTime 1天
+auth_server_base:
+  ttl: 259200000
+  maxIdleTime: 86400000
+  maxSize: 10000
+
+# 存储token:  user
+auth_server_token:
+  ttl: 259200000
+  maxIdleTime: 86400000
+  maxSize: 100000
+
+# 存储 userId: token
+auth_server_user:
+  ttl: 259200000
+  maxIdleTime: 86400000
+  maxSize: 100000

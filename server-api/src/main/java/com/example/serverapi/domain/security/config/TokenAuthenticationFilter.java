@@ -40,8 +40,6 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
             this.logger.debug("Token Authentication Authorization header found ");
         }
 
-
-
         //token包装类, 使用principal来装载token
 //        TokenAuthenticationToken tokenAuthenticationToken = new TokenAuthenticationToken(
 //            token);

@@ -1,6 +1,7 @@
 package com.example.serverapi.config;
 
 import com.example.serverapi.domain.common.vo.BaseResponse;
+import com.example.serverapi.domain.security.exception.UnAuthorizedException;
 import com.example.serverapi.log.SystemEvent;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -86,15 +87,15 @@ public class ExceptionInterceptor extends ResponseEntityExceptionHandler {
         return new BaseResponse<>(event.getCode(), exception.getMessage());
     }
 
-//    /**
-//     * 认证失败401.
-//     */
-//    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-//    @ExceptionHandler(UnAuthorizedException.class)
-//    public BaseResponse<Object> unAuthorizedException(UnAuthorizedException exception) {
-//        SystemEvent event = SystemEvent.UN_AUTHORIZED_ERROR;
-//        return new BaseResponse<>(event.getCode(), exception.getMessage());
-//    }
+    /**
+     * 认证失败401.
+     */
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UnAuthorizedException.class)
+    public BaseResponse<Object> unAuthorizedException(UnAuthorizedException exception) {
+        SystemEvent event = SystemEvent.UN_AUTHORIZED_ERROR;
+        return new BaseResponse<>(event.getCode(), exception.getMessage());
+    }
 
 //    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 //    @ExceptionHandler(BizException.class)

@@ -15,6 +15,7 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
 
@@ -53,6 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         //如果本filter认证失败，是否继续认证，如果还有其他认证方式可以继续，
         //本demo只有token认证一种方案，认证失败即返回
         filter.setContinueChainBeforeSuccessfulAuthentication(false);
+        filter.setAuthenticationFailureHandler(simpleUrlAuthenticationFailureHandler());
 
         http.cors()
             .and()
@@ -85,8 +87,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * 移除权限的默认前缀ROLE_
+     * @return GrantedAuthorityDefaults
+     */
     @Bean
     GrantedAuthorityDefaults grantedAuthorityDefaults() {
         return new GrantedAuthorityDefaults(""); // Remove the ROLE_ prefix
+    }
+
+    /**
+     * 认证失败后跳转
+     * @return 认证失败后跳转
+     */
+    private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler() {
+        return new SimpleUrlAuthenticationFailureHandler("/v1/auth/error");
     }
 }

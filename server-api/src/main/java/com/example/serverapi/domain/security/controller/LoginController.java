@@ -1,6 +1,7 @@
 package com.example.serverapi.domain.security.controller;
 
 import com.example.serverapi.domain.common.vo.BaseResponse;
+import com.example.serverapi.domain.security.exception.UnAuthorizedException;
 import com.example.serverapi.domain.security.service.IAuthService;
 import com.example.serverapi.domain.security.utils.TokenUtils;
 import com.example.serverapi.domain.security.vo.UserToken;
@@ -39,5 +40,11 @@ public class LoginController {
         return new BaseResponse<>(token);
 
     }
+
+    @GetMapping("error")
+    public BaseResponse<String> error() {
+        throw new UnAuthorizedException("登录失效");
+    }
+
 
 }

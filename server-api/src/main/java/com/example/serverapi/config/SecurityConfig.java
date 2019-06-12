@@ -1,12 +1,28 @@
 package com.example.serverapi.config;
 
+import com.example.serverapi.domain.security.config.AdminVoter;
 import com.example.serverapi.domain.security.config.UserTokenAuthenticationProvider;
 import com.example.serverapi.domain.security.config.TokenAuthenticationFilter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.annotation.Jsr250Voter;
+import org.springframework.security.access.expression.method.ExpressionBasedPreInvocationAdvice;
+import org.springframework.security.access.prepost.PreInvocationAuthorizationAdviceVoter;
+import org.springframework.security.access.vote.AffirmativeBased;
+import org.springframework.security.access.vote.AuthenticatedVoter;
+import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -15,6 +31,7 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
@@ -25,7 +42,7 @@ import org.springframework.security.web.authentication.www.DigestAuthenticationE
  */
 @Configuration
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
@@ -62,9 +79,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .and().csrf().disable()
             .authorizeRequests()
             //允许以下请求
-//            .antMatchers("/v1/auth/**").permitAll()
             // 所有请求需要身份认证
             .anyRequest().authenticated()
+//            .accessDecisionManager(accessDecisionManager())
             .and()
             //login   username,password通过UsernamePasswordAuthenticationFilter实现装载
             //token认证   需要对应的token解析，位于UsernamePasswordAuthenticationFilter之后
@@ -74,6 +91,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authenticationEntryPoint(new DigestAuthenticationEntryPoint())
             .accessDeniedHandler(new AccessDeniedHandlerImpl())
         ;
+
     }
 
     @Bean
@@ -89,6 +107,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 移除权限的默认前缀ROLE_
+     *
      * @return GrantedAuthorityDefaults
      */
     @Bean
@@ -98,9 +117,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     /**
      * 认证失败后跳转
+     *
      * @return 认证失败后跳转
      */
     private SimpleUrlAuthenticationFailureHandler simpleUrlAuthenticationFailureHandler() {
         return new SimpleUrlAuthenticationFailureHandler("/v1/auth/error");
     }
+
+//    @Bean
+//    public AccessDecisionManager accessDecisionManager() {
+//
+//    }
 }

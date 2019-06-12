@@ -44,4 +44,18 @@ public class UserController {
         return new BaseResponse<>(details);
     }
 
+    @PreAuthorize("hasAnyAuthority('test')")
+    @GetMapping("test")
+    public String test(){
+
+        return "test";
+    }
+
+    @PreAuthorize("hasAnyAuthority('ryan')")
+    @GetMapping("ryan")
+    public String ryan(){
+
+        return "ryan";
+    }
+
 }

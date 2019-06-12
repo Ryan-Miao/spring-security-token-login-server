@@ -12,6 +12,8 @@ spring:
     name: server-api
 
 
+  main:
+    allow-bean-definition-overriding: true
 
 springfox.documentation.swagger.v2.path: /swagger-resources/api-docs
 swagger.enable: true

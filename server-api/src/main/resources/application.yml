@@ -21,7 +21,7 @@ swagger.enable: true
 server:
   servlet:
     context-path: /api
-  port: 80
+  port: 8081
 
 
 logging.file: logs/${spring.application.name}

@@ -41,8 +41,6 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         }
 
         //token包装类, 使用principal来装载token
-//        TokenAuthenticationToken tokenAuthenticationToken = new TokenAuthenticationToken(
-//            token);
         UsernamePasswordAuthenticationToken tokenAuthenticationToken = new UsernamePasswordAuthenticationToken(token, null);
 
         //AuthenticationManager 负责解析

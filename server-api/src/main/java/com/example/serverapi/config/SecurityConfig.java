@@ -1,28 +1,13 @@
 package com.example.serverapi.config;
 
-import com.example.serverapi.domain.security.config.AdminVoter;
-import com.example.serverapi.domain.security.config.UserTokenAuthenticationProvider;
 import com.example.serverapi.domain.security.config.TokenAuthenticationFilter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import org.aopalliance.intercept.MethodInterceptor;
+import com.example.serverapi.domain.security.config.UserTokenAuthenticationProvider;
+import com.example.serverapi.domain.security.service.TokenManagement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.access.AccessDecisionManager;
-import org.springframework.security.access.AccessDecisionVoter;
-import org.springframework.security.access.annotation.Jsr250Voter;
-import org.springframework.security.access.expression.method.ExpressionBasedPreInvocationAdvice;
-import org.springframework.security.access.prepost.PreInvocationAuthorizationAdviceVoter;
-import org.springframework.security.access.vote.AffirmativeBased;
-import org.springframework.security.access.vote.AuthenticatedVoter;
-import org.springframework.security.access.vote.RoleVoter;
-import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
-import org.springframework.security.config.annotation.method.configuration.GlobalMethodSecurityConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,7 +16,6 @@ import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.access.AccessDeniedHandlerImpl;
-import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.authentication.www.DigestAuthenticationEntryPoint;
@@ -42,15 +26,22 @@ import org.springframework.security.web.authentication.www.DigestAuthenticationE
  */
 @Configuration
 @EnableWebSecurity
-//@EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
+// 这里不启用方法aop权限校验，因为单独实现了GlobalMethodSecurityConfig
+// @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final TokenManagement tokenManagement;
+
+    public SecurityConfig(TokenManagement tokenManagement) {
+        this.tokenManagement = tokenManagement;
+    }
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         //DaoAuthenticationConfigurer-DaoAuthenticationProvider用来提供登录时用户名和密码认证
         //auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
         //自定义TokenAuthenticationProvider, 用来提供token认证
-        auth.authenticationProvider(new UserTokenAuthenticationProvider());
+        auth.authenticationProvider(new UserTokenAuthenticationProvider(tokenManagement));
 
     }
 
@@ -73,6 +64,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         filter.setContinueChainBeforeSuccessfulAuthentication(false);
         filter.setAuthenticationFailureHandler(simpleUrlAuthenticationFailureHandler());
 
+        //CHECKSTYLE:OFF
         http.cors()
             .and()
             .headers().frameOptions().disable()
@@ -81,7 +73,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             //允许以下请求
             // 所有请求需要身份认证
             .anyRequest().authenticated()
-//            .accessDecisionManager(accessDecisionManager())
+            //.accessDecisionManager(accessDecisionManager())
             .and()
             //login   username,password通过UsernamePasswordAuthenticationFilter实现装载
             //token认证   需要对应的token解析，位于UsernamePasswordAuthenticationFilter之后
@@ -91,6 +83,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             .authenticationEntryPoint(new DigestAuthenticationEntryPoint())
             .accessDeniedHandler(new AccessDeniedHandlerImpl())
         ;
+        //CHECKSTYLE:ON
 
     }
 
@@ -99,6 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {

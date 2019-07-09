@@ -1,6 +1,5 @@
 package com.example.serverapi.domain.security.config;
 
-import com.example.serverapi.ServerApiApplication;
 import com.example.serverapi.domain.security.entity.Role;
 import com.example.serverapi.domain.security.service.TokenManagement;
 import java.util.Collection;
@@ -22,6 +21,12 @@ import org.springframework.security.core.userdetails.UserDetails;
  */
 public class UserTokenAuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
+    private TokenManagement tokenManagement;
+
+    public UserTokenAuthenticationProvider(
+        TokenManagement tokenManagement) {
+        this.tokenManagement = tokenManagement;
+    }
 
     @Override
     protected void additionalAuthenticationChecks(UserDetails userDetails,
@@ -34,8 +39,8 @@ public class UserTokenAuthenticationProvider extends AbstractUserDetailsAuthenti
     protected UserDetails retrieveUser(String token,
         UsernamePasswordAuthenticationToken authentication) throws AuthenticationException {
         //验证token
-        TokenManagement tokenManagement = ServerApiApplication.context
-            .getBean(TokenManagement.class);
+        //TokenManagement tokenManagement = ServerApiApplication.context
+        //  .getBean(TokenManagement.class);
         com.example.serverapi.domain.security.entity.User userInfo = tokenManagement.get(token);
 
         if (userInfo == null) {

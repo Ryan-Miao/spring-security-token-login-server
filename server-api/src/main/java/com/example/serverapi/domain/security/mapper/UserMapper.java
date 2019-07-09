@@ -11,5 +11,4 @@ import tk.mybatis.mapper.common.Mapper;
 @Component
 public interface UserMapper extends Mapper<User> {
 
-    org.springframework.security.core.userdetails.User findByUserName(String username);
 }

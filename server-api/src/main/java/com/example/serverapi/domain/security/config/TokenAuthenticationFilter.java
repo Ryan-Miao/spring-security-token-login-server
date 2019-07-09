@@ -16,9 +16,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 
 /**
- * @see org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
  * @author Ryan Miao
  * @date 2019/5/30 10:11
+ * @see org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
  */
 public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
@@ -32,7 +32,7 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         throws AuthenticationException, IOException, ServletException {
         boolean debug = this.logger.isDebugEnabled();
         String token = TokenUtils.readTokenFromRequest(request);
-        if (StringUtils.isBlank(token)){
+        if (StringUtils.isBlank(token)) {
             throw new UsernameNotFoundException("token not found");
         }
 
@@ -41,7 +41,8 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
         }
 
         //token包装类, 使用principal来装载token
-        UsernamePasswordAuthenticationToken tokenAuthenticationToken = new UsernamePasswordAuthenticationToken(token, null);
+        UsernamePasswordAuthenticationToken tokenAuthenticationToken = new UsernamePasswordAuthenticationToken(
+            token, null);
 
         //AuthenticationManager 负责解析
         Authentication authResult = getAuthenticationManager()
@@ -57,15 +58,19 @@ public class TokenAuthenticationFilter extends AbstractAuthenticationProcessingF
      * 重写认证成功后的方法，不跳转.
      */
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
+    protected void successfulAuthentication(HttpServletRequest request,
+        HttpServletResponse response, FilterChain chain, Authentication authResult)
+        throws IOException, ServletException {
         if (this.logger.isDebugEnabled()) {
-            this.logger.debug("Authentication success. Updating SecurityContextHolder to contain: " + authResult);
+            this.logger.debug(
+                "Authentication success. Updating SecurityContextHolder to contain: " + authResult);
         }
 
         SecurityContextHolder.getContext().setAuthentication(authResult);
         getRememberMeServices().loginSuccess(request, response, authResult);
         if (this.eventPublisher != null) {
-            this.eventPublisher.publishEvent(new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
+            this.eventPublisher.publishEvent(
+                new InteractiveAuthenticationSuccessEvent(authResult, this.getClass()));
         }
 
         chain.doFilter(request, response);

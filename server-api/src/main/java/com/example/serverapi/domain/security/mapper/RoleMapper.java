@@ -1,6 +1,5 @@
 package com.example.serverapi.domain.security.mapper;
 
-import com.example.serverapi.domain.security.entity.Permission;
 import com.example.serverapi.domain.security.entity.Role;
 import java.util.List;
 import org.apache.ibatis.annotations.Param;
